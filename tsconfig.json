@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", // JavaScript version output
+    "module": "NodeNext", // ES module system til Node.js
+    "moduleResolution": "NodeNext", // Resolver imports som Node ESM
+    "outDir": "./dist", // Kompileret kode output mappe
+    "rootDir": "./src", // Kildekode mappe
+    "strict": true, // Aktiverer streng typekontrol
+    "esModuleInterop": true, // Gør CommonJS imports kompatible
+    "skipLibCheck": true, // Springer typecheck af dependencies over
+    "types": ["vite/client"] // Inkluderer Vite client types (CSS-imports m.m.)
+  },
+  "include": ["src"]
+}
