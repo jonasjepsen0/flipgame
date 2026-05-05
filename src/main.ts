@@ -1,3 +1,5 @@
 import './style.css'
+import { GameController } from './controllers/GameController.js'
 
-console.log('Hej verden')
+const game = new GameController()
+game.start('body')
