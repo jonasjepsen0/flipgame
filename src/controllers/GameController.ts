@@ -1,4 +1,5 @@
 import { Board } from '../view/organisms/board.js'
+import { Timer } from '../view/molecules/timer.js'
 import { render } from '../utils/dom.js'
 
 import tile0 from '../assets/faces/tile0.jpg'
@@ -18,10 +19,17 @@ export class GameController {
     private firstCard: { element: HTMLElement, faceSrc: string } | null = null
     private locked = false
 
+    private timerElement = Timer()
+    private startTime: number | null = null
+    private timerInterval: number | null = null
+    private matchedPairs = 0
+
     start(targetId: string) {
         const deck = this.buildDeck()
         const board = Board(deck, back, (element, faceSrc) => this.onCardClick(element, faceSrc))
         render(targetId, board, true)
+
+        render(targetId, this.timerElement)
     }
 
     private buildDeck() {
@@ -34,6 +42,8 @@ export class GameController {
         if (this.locked) return
         if (element.classList.contains("flipped")) return
 
+        if (this.startTime === null) this.startTimer()
+
         element.classList.add("flipped")
 
         if (this.firstCard === null) {
@@ -45,6 +55,10 @@ export class GameController {
         this.firstCard = null
 
         if (first.faceSrc === faceSrc) {
+            this.matchedPairs++
+            if (this.matchedPairs === this.faces.length) {
+                this.stopTimer()
+            }
             return
         }
 
@@ -54,5 +68,31 @@ export class GameController {
             element.classList.remove("flipped")
             this.locked = false
         }, 800)
+    }
+
+    private startTimer() {
+        this.startTime = Date.now()
+        this.timerInterval = window.setInterval(() => this.updateTimer(), 200)
+    }
+
+    private stopTimer() {
+        if (this.timerInterval !== null) {
+            clearInterval(this.timerInterval)
+            this.timerInterval = null
+        }
+        this.timerElement.classList.add("text-green-500", "font-bold")
+    }
+
+    private updateTimer() {
+        if (this.startTime === null) return
+        const elapsed = Date.now() - this.startTime
+        this.timerElement.textContent = this.formatTime(elapsed)
+    }
+
+    private formatTime(ms: number): string {
+        const totalSeconds = Math.floor(ms / 1000)
+        const minutes = Math.floor(totalSeconds / 60)
+        const seconds = totalSeconds % 60
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`
     }
 }
