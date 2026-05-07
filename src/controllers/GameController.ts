@@ -1,6 +1,7 @@
 import { Board } from '../view/organisms/board.js'
 import { Timer } from '../view/molecules/timer.js'
 import { Moves } from '../view/molecules/moves.js'
+import { WinPopup } from '../view/molecules/winPopup.js'
 import { render } from '../utils/dom.js'
 
 import tile0 from '../assets/faces/tile0.jpg'
@@ -28,7 +29,24 @@ export class GameController {
     private movesElement = Moves()
     private moveCount = 0
 
+    private targetId = ""
+
     start(targetId: string) {
+        this.targetId = targetId
+
+        this.firstCard = null
+        this.locked = false
+        this.matchedPairs = 0
+        this.moveCount = 0
+        this.startTime = null
+        if (this.timerInterval !== null) {
+            clearInterval(this.timerInterval)
+            this.timerInterval = null
+        }
+        this.timerElement.textContent = "0:00"
+        this.timerElement.classList.remove("text-green-500", "font-bold")
+        this.movesElement.textContent = "Moves: 0"
+
         const deck = this.buildDeck()
         const board = Board(deck, back, (element, faceSrc) => this.onCardClick(element, faceSrc))
         render(targetId, board, true)
@@ -66,6 +84,7 @@ export class GameController {
             this.matchedPairs++
             if (this.matchedPairs === this.faces.length) {
                 this.stopTimer()
+                this.showWinPopup()
             }
             return
         }
@@ -106,5 +125,14 @@ export class GameController {
 
     private updateMoves() {
         this.movesElement.textContent = `Moves: ${this.moveCount}`
+    }
+
+    private showWinPopup() {
+        const popup = WinPopup(
+            this.timerElement.textContent ?? "0:00",
+            this.moveCount,
+            () => this.start(this.targetId)
+        )
+        render(this.targetId, popup)
     }
 }
