@@ -1,5 +1,6 @@
 import { Board } from '../view/organisms/board.js'
 import { Timer } from '../view/molecules/timer.js'
+import { Moves } from '../view/molecules/moves.js'
 import { render } from '../utils/dom.js'
 
 import tile0 from '../assets/faces/tile0.jpg'
@@ -24,12 +25,16 @@ export class GameController {
     private timerInterval: number | null = null
     private matchedPairs = 0
 
+    private movesElement = Moves()
+    private moveCount = 0
+
     start(targetId: string) {
         const deck = this.buildDeck()
         const board = Board(deck, back, (element, faceSrc) => this.onCardClick(element, faceSrc))
         render(targetId, board, true)
 
         render(targetId, this.timerElement)
+        render(targetId, this.movesElement)
     }
 
     private buildDeck() {
@@ -53,6 +58,9 @@ export class GameController {
 
         const first = this.firstCard
         this.firstCard = null
+
+        this.moveCount++
+        this.updateMoves()
 
         if (first.faceSrc === faceSrc) {
             this.matchedPairs++
@@ -94,5 +102,9 @@ export class GameController {
         const minutes = Math.floor(totalSeconds / 60)
         const seconds = totalSeconds % 60
         return `${minutes}:${seconds.toString().padStart(2, '0')}`
+    }
+
+    private updateMoves() {
+        this.movesElement.textContent = `Moves: ${this.moveCount}`
     }
 }
