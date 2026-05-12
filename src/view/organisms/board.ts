@@ -6,7 +6,7 @@ export const Board = (
     backSrc: string,
     onCardClick: (element: HTMLElement, faceSrc: string) => void
 ) => {
-    const element = Div("board grid grid-cols-5 gap-2 p-4 max-w-3xl mx-auto")
+    const element = Div("board grid grid-cols-5 gap-2 p-4 max-w-3xl")
 
     faceSrcs.forEach(faceSrc => {
         const card = Card(faceSrc, backSrc, onCardClick)

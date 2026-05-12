@@ -2,6 +2,9 @@ import { Board } from '../view/organisms/board.js'
 import { Timer } from '../view/molecules/timer.js'
 import { Moves } from '../view/molecules/moves.js'
 import { WinPopup } from '../view/molecules/winPopup.js'
+import { Scoreboard } from '../view/molecules/scoreboard.js'
+import { Div } from '../view/atoms/atoms.js'
+import { getScores, addScore } from '../model/scoreboardModel.js'
 import { render } from '../utils/dom.js'
 
 import tile0 from '../assets/faces/tile0.jpg'
@@ -49,8 +52,13 @@ export class GameController {
 
         const deck = this.buildDeck()
         const board = Board(deck, back, (element, faceSrc) => this.onCardClick(element, faceSrc))
-        render(targetId, board, true)
+        const scoreboardEl = Scoreboard(getScores())
 
+        const row = Div("grid grid-cols-[1fr_auto] gap-8 items-start max-w-7xl mx-auto p-4")
+        row.appendChild(board)
+        row.appendChild(scoreboardEl)
+
+        render(targetId, row, true)
         render(targetId, this.timerElement)
         render(targetId, this.movesElement)
     }
@@ -128,6 +136,7 @@ export class GameController {
     }
 
     private showWinPopup() {
+        addScore("player", this.moveCount)
         const popup = WinPopup(
             this.timerElement.textContent ?? "0:00",
             this.moveCount,
